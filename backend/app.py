@@ -1,28 +1,31 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 import requests
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 
-# Load .env
 load_dotenv()
 
-app = Flask(
-    __name__,
-    static_folder=os.path.join(os.path.dirname(__file__), '../frontend/dist'),
-    static_url_path='/'
-)
+
+app = Flask(__name__)
 CORS(app)
-# API Keys
+
+# API Keys 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 if not WEATHER_API_KEY or not OPENWEATHER_API_KEY:
-    raise ValueError("❌ WEATHER_API_KEY or OPENWEATHER_API_KEY not found!")
+    
+    print("❌ WARNING: API keys are not set!")
+    
 
-# ----------------------
-# API Routes
-# ----------------------
+
+
+
+@app.route("/")
+def index():
+    return jsonify({"status": "API is operational"}), 200
+
 
 @app.route("/forecast")
 def forecast():
@@ -41,8 +44,9 @@ def forecast():
             return jsonify(data), 400
         return jsonify(data)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Forecast API failed: {str(e)}"}), 500
 
+# 3. Current Weather API
 @app.route("/weather")
 def weather():
     city = request.args.get("city")
@@ -55,21 +59,8 @@ def weather():
         res = requests.get(url)
         return jsonify(res.json())
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Weather API failed: {str(e)}"}), 500
 
-# ----------------------
-# Serve React
-# ----------------------
-@app.route("/", defaults={"path": ""})
-@app.route("/<path:path>")
-def serve_react(path):
-    """Serve React build files. React Router paths fallback to index.html"""
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
-    return send_from_directory(app.static_folder, "index.html")
 
-# ----------------------
-# Run
-# ----------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
