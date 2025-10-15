@@ -188,7 +188,7 @@ function App() {
   return (
     <div
       id="app"
-      className="min-h-screen flex justify-center items-center w-full bg-[url('./assets/home-background.avif')] bg-cover p-2 sm:p-4"
+      className="min-h-screen flex justify-center items-center w-full bg-[url('/home-background.avif')] bg-cover p-2 sm:p-4"
     >
       <div
         className="w-11/12 sm:w-9/10 min-h-[85vh] sm:h-9/10 rounded-2xl bg-white/20 backdrop-blur-lg border border-white/30 shadow-lg flex flex-col items-center justify-center px-2 sm:px-4"
